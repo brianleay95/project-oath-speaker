@@ -12,7 +12,7 @@ const app = express();
 // Configure CORS to specifically allow frontend on port 3000
 app.use(cors({
   origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type'],
   credentials: true
 }));
@@ -308,6 +308,28 @@ app.post('/api/chats/:id/messages', async (req, res) => {
   } catch (error) {
     console.error('Error processing message:', error);
     res.status(500).json({ error: 'Failed to process message' });
+  }
+});
+
+// Update the chat title endpoint
+app.patch('/api/chats/:id', (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+  
+  try {
+    console.log('Updating chat title:', { id, title });
+    const chat = chats.find(c => c.id === id);
+    if (!chat) {
+      console.log('Chat not found:', id);
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+
+    chat.title = title;
+    console.log('Chat updated:', chat);
+    res.json(chat);
+  } catch (error) {
+    console.error('Error updating chat:', error);
+    res.status(500).json({ error: 'Failed to update chat' });
   }
 });
 
